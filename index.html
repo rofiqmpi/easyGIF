@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>easyGIF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        --bg: #0e0e0e;
+        --card: #1a1a1a;
+        --primary: #00f2ff;
+        --glow: #00ffd5;
+        --accent: #00ffaa;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--bg); color: white; font-family: 'Orbitron', sans-serif;
+        display: flex; justify-content: center; align-items: center; min-height: 90vh; padding: 20px;
+      }
+      .error-message { color: #ff3c3c; margin-top: 25px; }
+      .card-container {
+        background: var(--card); padding: 40px 30px; border-radius: 20px;
+        box-shadow: 0 0 20px #00f2ffa6; width: 100%; max-width: 450px; text-align: center;
+      }
+      h1 { font-size: 2rem; margin-bottom: 25px; color: var(--accent); text-shadow: 0 0 50px var(--accent); }
+      form { width: 100%; }
+      .file-upload { position: relative; display: block; width: 100%; margin-bottom: 20px; }
+      .file-upload input[type="file"] { display: none; }
+      .file-upload label {
+        display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
+        padding: 14px; border: 2px dashed var(--glow); border-radius: 14px; background: #121212; color: #aaa;
+        font-size: 1rem; cursor: pointer; transition: border 0.3s ease, color 0.3s ease;
+      }
+      .file-upload label:hover { border-color: var(--accent); color: var(--accent); }
+      .file-selected { color: var(--accent); border-color: var(--accent); }
+      .format-select-container { text-align: left; margin-bottom: 20px; }
+      .format-label {
+        display: inline-flex; align-items: center; gap: 8px; color: var(--accent);
+        font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; text-shadow: 0 0 8px var(--accent);
+      }
+      .select-wrapper { position: relative; }
+      .select-wrapper select {
+        width: 100%; padding: 12px 14px; padding-right: 40px; border-radius: 10px; background: #121212; color: white;
+        border: 2px solid var(--glow); font-family: 'Orbitron', sans-serif; font-size: 0.95rem;
+        appearance: none; -webkit-appearance: none; -moz-appearance: none; cursor: pointer;
+      }
+      .select-wrapper select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 8px var(--accent); }
+      .dropdown-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--glow); width: 18px; height: 18px; }
+      button {
+        width: 100%; padding: 14px; font-size: 1.1rem; background: linear-gradient(135deg, var(--primary), var(--accent));
+        border: none; border-radius: 14px; color: #000; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px var(--primary);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      button:hover { transform: translateY(-5px); box-shadow: 0 0 25px var(--accent); }
+      #result { margin-top: 30px; }
+      .gif-preview { margin-top: 20px; background: #000; padding: 10px; border-radius: 12px; box-shadow: 0 0 15px #00ffc3; }
+      .gif-preview img { max-width: 100%; border-radius: 10px; }
+      a { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--glow); font-weight: bold; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      @media (max-width: 480px) { .card-container { padding: 30px 20px; } h1 { font-size: 1.5rem; } }
+      .icon { width: 18px; height: 18px; vertical-align: middle; }
+      @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+    </style>
+  </head>
+  <body>
+    <div class="card-container">
+      <h1>easyGIF</h1>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <div class="file-upload">
+          <input type="file" id="fileInput" name="file" accept="video/*,image/*" />
+          <label for="fileInput" id="fileLabel">
+            <i data-lucide="file" class="icon"></i> Choose a file
+          </label>
+        </div>
+        <div class="format-select-container">
+          <label class="format-label" for="formatSelect">
+            <i data-lucide="settings" class="icon"></i> Select Output Format
+          </label>
+          <div class="select-wrapper">
+            <select id="formatSelect" name="format" required>
+              <option value="" disabled selected>Select format ...</option>
+              <option value="mp4">MP4</option>
+              <option value="webm">WEBM</option>
+              <option value="avi">AVI</option>
+              <option value="mov">MOV</option>
+              <option value="mkv">MKV</option>
+              <option value="flv">FLV</option>
+              <option value="wmv">WMV</option>
+              <option value="mpg">MPG</option>
+              <option value="3gp">3GP</option>
+              <option value="ogv">OGV</option>
+              <option value="mp3">MP3</option>
+              <option value="wav">WAV</option>
+              <option value="ogg">OGG</option>
+              <option value="flac">FLAC</option>
+              <option value="aac">AAC</option>
+              <option value="m4a">M4A</option>
+              <option value="alac">ALAC</option>
+              <option value="opus">OPUS</option>
+              <option value="amr">AMR</option>
+              <option value="gif">GIF</option>
+              <option value="png">PNG</option>
+              <option value="jpg">JPG</option>
+              <option value="jpeg">JPEG</option>
+              <option value="webp">WEBP</option>
+              <option value="bmp">BMP</option>
+              <option value="tiff">TIFF</option>
+              <option value="svg">SVG</option>
+              <option value="avif">AVIF</option>
+              <option value="ico">ICO</option>
+            </select>
+            <i data-lucide="chevron-down" class="dropdown-icon"></i>
+          </div>
+        </div>
+        <button type="submit">Convert</button>
+      </form>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById('uploadForm');
+      const resultDiv = document.getElementById('result');
+      const fileInput = document.getElementById('fileInput');
+      const fileLabel = document.getElementById('fileLabel');
+      const formatSelect = document.getElementById('formatSelect');
+
+      fileInput.onchange = () => {
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileName = file.name;
+          const fileExtension = fileName.split('.').pop().toLowerCase();
+
+          fileLabel.innerHTML = `<i data-lucide="check-circle" class="icon"></i> File selected (.${fileExtension})`;
+          fileLabel.classList.add('file-selected');
+        } else {
+          fileLabel.innerHTML = `<i data-lucide="file" class="icon"></i> Choose a file`;
+          fileLabel.classList.remove('file-selected');
+        }
+        lucide.createIcons();
+      };
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        if (!fileInput.files.length || !formatSelect.value) {
+          resultDiv.innerHTML = `
+            <p class="error-message">
+              <i data-lucide="x-circle" class="icon"></i> Please select file and format.
+            </p>`;
+          lucide.createIcons();
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("format", formatSelect.value);
+
+        resultDiv.innerHTML = `
+          <p style="margin-top: 20px;">
+            <i data-lucide="loader" class="icon" style="animation:spin 1s linear infinite;"></i> Converting...
+          </p>`;
+        lucide.createIcons();
+
+        try {
+          const res = await fetch('/convert', { method: 'POST', body: formData });
+
+          if (res.ok) {
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            resultDiv.innerHTML = `
+              <div class="gif-preview">
+                <h3 style="color: var(--accent);">
+                  <i data-lucide="check-circle" class="icon"></i> Conversion Ready!
+                </h3>
+                <a href="${url}" download="converted.${formatSelect.value}">
+                  <i data-lucide="download" class="icon"></i> Download
+                </a>
+              </div>`;
+          } else {
+            const errorText = await res.text();
+            resultDiv.innerHTML = `<p style="color:red;"><i data-lucide="x-circle" class="icon"></i> Error: ${errorText}</p>`;
+          }
+        } catch (err) {
+          resultDiv.innerHTML = `<p style="color:red;"><i data-lucide="x-circle" class="icon"></i> Network error. Try again.</p>`;
+        }
+
+        lucide.createIcons();
+      };
+
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
